@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="359dp"
+        android:layout_height="139dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/recipeImage"
+            android:layout_width="130dp"
+            android:layout_height="125dp"
+            android:layout_margin="6dp"
+            android:src="@drawable/recipeimage2" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/material_card_title_block_large_padding_top"
+            android:paddingBottom="@dimen/material_card_title_block_large_padding_bottom"
+            android:paddingEnd="@dimen/material_card_title_block_padding_horizontal"
+            android:paddingStart="@dimen/material_card_title_block_padding_horizontal">
+
+            <TextView
+                android:id="@+id/recipe_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:textSize="25sp"
+                tools:text="Recipe Name"
+                android:textColor="@color/material_color_blue_800"
+                android:layout_alignParentBottom="true" />
+
+            <TextView
+                android:id="@+id/recipeServings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/material_color_blue_500"
+                android:textSize="@dimen/material_card_title_block_subtitle_text_size"
+                tools:text="Servings:" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
