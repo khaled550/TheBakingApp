@@ -119,22 +119,20 @@ public class DBUtils extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if (cursor != null)
-            cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            do{
+                Step obj = new Step();
+                obj.setRecipeId(Integer.parseInt(cursor.getString(1)));
+                obj.setId(Integer.parseInt(cursor.getString(2)));
+                obj.setVideoURL(cursor.getString(3));
+                obj.setShortDescription(cursor.getString(4));
+                obj.setDescription(cursor.getString(5));
+                obj.setThumbnailURL(cursor.getString(6));
 
-        do{
-            Step obj = new Step();
-            obj.setRecipeId(Integer.parseInt(cursor.getString(1)));
-            obj.setId(Integer.parseInt(cursor.getString(2)));
-            obj.setVideoURL(cursor.getString(3));
-            obj.setShortDescription(cursor.getString(4));
-            obj.setDescription(cursor.getString(5));
-            obj.setThumbnailURL(cursor.getString(6));
-
-            steps.add(obj);
+                steps.add(obj);
+            }
+            while (cursor.moveToNext());
         }
-        while (cursor.moveToNext());
-
         return steps;
     }
 

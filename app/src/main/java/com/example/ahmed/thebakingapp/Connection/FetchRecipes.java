@@ -20,10 +20,10 @@ import java.util.List;
 public class FetchRecipes extends AsyncTask<Void, Void, List<Recipe>> {
 
     private String TAG = FetchRecipes.class.getSimpleName();
-    public List<Recipe> recipeList = new ArrayList<>();
-    public List<Ingredient> ingredientList = new ArrayList<>();
-    public List<Step> stepList = new ArrayList<>();
-    Context context;
+    private List<Recipe> recipeList = new ArrayList<>();
+    private List<Ingredient> ingredientList = new ArrayList<>();
+    private List<Step> stepList = new ArrayList<>();
+    private Context context;
 
     public FetchRecipes(Context context){
         this.context = context;
@@ -51,6 +51,7 @@ public class FetchRecipes extends AsyncTask<Void, Void, List<Recipe>> {
                     recipe.setImage(r.getString("image"));
 
                     JSONArray ingredientsArray = r.getJSONArray("ingredients");
+
                     for (int j = 0; j < ingredientsArray.length(); j++) {
                         JSONObject ingredients = ingredientsArray.getJSONObject(j);
                         int recipeId = Integer.parseInt(r.getString("id"));
@@ -64,22 +65,21 @@ public class FetchRecipes extends AsyncTask<Void, Void, List<Recipe>> {
                     }
 
                     JSONArray stepsArray = r.getJSONArray("steps");
-                    for (int j = 0; j < stepsArray.length(); j++) {
-                        JSONObject steps = stepsArray.getJSONObject(j);
+
+                    for (int m = 0; m < stepsArray.length(); m++) {
+                        JSONObject steps = stepsArray.getJSONObject(m);
                         int recipeId = Integer.parseInt(r.getString("id"));
-                        int stepId = steps.getInt("id");
+                        int id = steps.getInt("id");
                         String shortDescription = steps.getString("shortDescription");
                         String description = steps.getString("description");
                         String videoURL = steps.getString("videoURL");
                         String thumbnailURL = steps.getString("thumbnailURL");
 
-                        Step step = new Step(recipeId,stepId,shortDescription,description,videoURL,thumbnailURL);
+                        Step stepRecipe = new Step(recipeId,id,shortDescription,description,videoURL,thumbnailURL);
 
-                        stepList.add(step);
+                        stepList.add(stepRecipe);
                     }
-
                     recipeList.add(recipe);
-
                 }
 
             } catch (final JSONException e) {

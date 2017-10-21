@@ -31,7 +31,7 @@ public class RecipeInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_info);
-        twoPane = findViewById(R.id.dualPane)!=null;
+        twoPane = findViewById(R.id.LinearLayout)!=null;
         linearLayout = (LinearLayout) findViewById(R.id.LinearLayout);
 
         if (savedInstanceState!=null) {
@@ -44,7 +44,7 @@ public class RecipeInfoActivity extends AppCompatActivity {
         bundle.putInt("current_id", currentId);
 
         FragmentManager fm = getSupportFragmentManager();
-        if (!twoPane && fm.findFragmentById(R.id.recipesInfoFragmentContainerSingle)==null) {
+        if (!RecipesInfoFragment.isBigScreen(this) && fm.findFragmentById(R.id.recipesInfoFragmentContainerSingle)==null) {
             RecipesInfoFragment baseFragment = getDetatchedMasterFragment(false);
             baseFragment.setArguments(bundle);
             fm.beginTransaction().add(R.id.recipesInfoFragmentContainerSingle, baseFragment, BASE_FRAGMENT).commit();
@@ -53,12 +53,12 @@ public class RecipeInfoActivity extends AppCompatActivity {
                 openSinglePaneDetailFragment();
             }
         }
-        if (twoPane && fm.findFragmentById(R.id.recipesInfoFragmentContainerDual)==null) {
+        if (RecipesInfoFragment.isBigScreen(this) && fm.findFragmentById(R.id.recipesInfoFragmentContainerDual)==null) {
             RecipesInfoFragment baseFragment = getDetatchedMasterFragment(true);
             baseFragment.setArguments(bundle);
             fm.beginTransaction().add(R.id.recipesInfoFragmentContainerDual, baseFragment, BASE_FRAGMENT).commit();
         }
-        if (twoPane && fm.findFragmentById(R.id.stepMediaContainer)==null) {
+        if (RecipesInfoFragment.isBigScreen(this) && fm.findFragmentById(R.id.stepMediaContainer)==null) {
             MediaFragment infoFragment = getDetatchedDetailFragment();
             fm.beginTransaction().add(R.id.stepMediaContainer, infoFragment, INFO_FRAGMENT).commit();
         }

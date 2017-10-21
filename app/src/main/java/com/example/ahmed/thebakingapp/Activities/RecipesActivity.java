@@ -1,6 +1,8 @@
 package com.example.ahmed.thebakingapp.Activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -25,12 +27,21 @@ public class RecipesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipes);
 
         if (savedInstanceState == null){
-            try {
-                recipeList  = new FetchRecipes(this).execute().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            if (!pref.getBoolean("firstTime", false)) {
+
+                try {
+                    recipeList  = new FetchRecipes(this).execute().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                bindData();
+
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("firstTime", true);
+                editor.commit();
             }
             bindData();
         }

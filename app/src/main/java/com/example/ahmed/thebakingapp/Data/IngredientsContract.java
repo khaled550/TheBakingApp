@@ -17,7 +17,7 @@ public class IngredientsContract {
                 "CREATE TABLE " + TABLE_NAME + " ("
                         + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                         + COLUMN_RECIPE_ID + " INTEGER NOT NULL,"
-                        + COLUMN_INGREDIENT + " TEXT UNIQUE NOT NULL,"
+                        + COLUMN_INGREDIENT + " TEXT NOT NULL,"
                         + COLUMN_QUANTITY + " REAL NOT NULL,"
                         + COLUMN_MEASURE + " TEXT NOT NULL"
                         + ")";

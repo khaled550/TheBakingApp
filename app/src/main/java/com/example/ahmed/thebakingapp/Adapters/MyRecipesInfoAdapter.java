@@ -13,30 +13,33 @@ import com.example.ahmed.thebakingapp.Models.Step;
 import com.example.ahmed.thebakingapp.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     public class ViewHolder0 extends RecyclerView.ViewHolder {
 
-        TextView ingTitle;
+        @BindView(R.id.ingredient_name)TextView ingTitle;
 
         public ViewHolder0(View view) {
             super(view);
-            ingTitle = (TextView) view.findViewById(R.id.ingredient_name);
+            ButterKnife.bind(this, view);
         }
     }
 
     public class ViewHolder2 extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView stepTitle;
-        ImageView stepImage;
+        @BindView(R.id.stepTitle)TextView stepTitle;
+        @BindView(R.id.stepImage)ImageView stepImage;
 
         public ViewHolder2(View itemView) {
             super(itemView);
-            stepTitle = (TextView) itemView.findViewById(R.id.stepTitle);
-            stepImage = (ImageView) itemView.findViewById(R.id.stepImage);
+            ButterKnife.bind(this, itemView);
         }
 
         @Override
@@ -44,16 +47,23 @@ public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
     private Context context;
-    private List<Ingredient> ingredientList;
-    private List<Step> stepList;
+    List<Object> infoList;
+    List<Ingredient> ingredientList = new ArrayList<>();
+    List<Step> stepList = new ArrayList<>();
     boolean isDisplayed = false;
     private final int INGREIENT = 0, STEP = 1;
 
 
-    public MyRecipesInfoAdapter(Context context, List<Ingredient> ingredientList, List<Step> stepList) {
-        this.ingredientList = ingredientList;
-        this.stepList = stepList;
+    public MyRecipesInfoAdapter(Context context, List<Object> infoList) {
+        this.infoList = infoList;
         this.context = context;
+
+        for (int i=0;i<infoList.size();i++){
+            if (infoList.get(i) instanceof Ingredient)
+                ingredientList.add((Ingredient) infoList.get(i));
+            else
+                stepList.add((Step) infoList.get(i));
+        }
     }
 
     @Override
@@ -90,7 +100,7 @@ public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.View
             case INGREIENT:
                 if (!isDisplayed){
                     isDisplayed = true;
-                    for (Ingredient ingredient : ingredientList){
+                    for (Ingredient ingredient :ingredientList){
                         ViewHolder0 viewHolder0 = (ViewHolder0)holder;
                         String row = String.format(Locale.US, "%s %s %s %s %.1f %s %s %s",viewHolder0.ingTitle.getText(),
                                 "-", ingredient.getIngredientName(),"   (", ingredient.getQuantity(),")   ", ingredient.getMeasure(),"\n");
@@ -119,6 +129,6 @@ public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return stepList.size();
+        return infoList.size()-ingredientList.size();
     }
 }

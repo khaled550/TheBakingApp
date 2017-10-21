@@ -15,6 +15,9 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.ViewHolder>{
 
     private List<Recipe> recipeList;
@@ -28,16 +31,13 @@ public class MyRecipesAdapter extends RecyclerView.Adapter<MyRecipesAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView recipeTitle;
-        ImageView recipeImage;
-        TextView recipeServings;
-
+        @BindView(R.id.recipe_name)TextView recipeTitle;
+        @BindView(R.id.recipeImage)ImageView recipeImage;
+        @BindView(R.id.recipeServings)TextView recipeServings;
 
         public ViewHolder(View view) {
             super(view);
-            recipeImage = (ImageView) view.findViewById(R.id.recipeImage);
-            recipeTitle = (TextView) view.findViewById(R.id.recipe_name);
-            recipeServings = (TextView) view.findViewById(R.id.recipeServings);
+            ButterKnife.bind(this, view);
         }
 
         @Override

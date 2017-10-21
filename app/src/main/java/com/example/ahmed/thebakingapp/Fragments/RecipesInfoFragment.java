@@ -53,7 +53,11 @@ public class RecipesInfoFragment extends Fragment {
         items.addAll(stepList);
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recipesInfoRecycler);
 
-        myRecipesInfoAdapter = new MyRecipesInfoAdapter(getActivity(), ingredientList, stepList);
+        List<Object> infoList = new ArrayList<>();
+        infoList.addAll(ingredientList);
+        infoList.addAll(stepList);
+
+        myRecipesInfoAdapter = new MyRecipesInfoAdapter(getActivity(), infoList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(myRecipesInfoAdapter);

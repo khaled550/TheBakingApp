@@ -19,7 +19,7 @@ public class StepsContarct {
                 "CREATE TABLE " + TABLE_NAME + " ("
                         + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                         + COLUMN_RECIPE_ID + " INTEGER NOT NULL,"
-                        + COLUMN_STEP_ID + " INTEGER UNIQUE NOT NULL,"
+                        + COLUMN_STEP_ID + " INTEGER NOT NULL,"
                         + COLUMN_VIDEO_URL + " TEXT NOT NULL,"
                         + COLUMN_SHORT_DESC + " TEXT NOT NULL,"
                         + COLUMN_DESC + " TEXT NOT NULL,"
