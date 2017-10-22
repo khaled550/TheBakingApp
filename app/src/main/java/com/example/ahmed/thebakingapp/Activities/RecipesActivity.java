@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.ahmed.thebakingapp.Connection.FetchRecipes;
+import com.example.ahmed.thebakingapp.Data.DBUtils;
 import com.example.ahmed.thebakingapp.Fragments.RecipesFragment;
 import com.example.ahmed.thebakingapp.Models.Recipe;
 import com.example.ahmed.thebakingapp.R;
@@ -18,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 
 public class RecipesActivity extends AppCompatActivity {
 
-    private String TAG = RecipesActivity.class.getSimpleName();
     public static List<Recipe> recipeList = new ArrayList<>();
 
     @Override
@@ -42,6 +42,10 @@ public class RecipesActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = pref.edit();
                 editor.putBoolean("firstTime", true);
                 editor.commit();
+            }
+            else{
+                DBUtils dbUtils = new DBUtils(this);
+                recipeList = dbUtils.getAllRecipes();
             }
             bindData();
         }

@@ -31,9 +31,9 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void recipeListActivityTest() {
-        onView(allOf(withId(R.id.recipesRecycler),isDisplayed())).check(matches(isDisplayed()));
+        onView(withId(R.id.recipesRecycler)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.recipesRecycler))).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
-        onView(allOf(withId(R.id.recipesInfoRecycler),isDisplayed())).check(matches(isDisplayed()));
+        onView(withId(R.id.recipesInfoRecycler)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.recipesInfoRecycler))).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
     }
 }

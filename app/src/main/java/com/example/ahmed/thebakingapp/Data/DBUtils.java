@@ -165,4 +165,21 @@ public class DBUtils extends SQLiteOpenHelper {
 
         return ingredients;
     }
+
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> Recipes = new ArrayList();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT  * FROM recipes", null);
+
+        while (cursor.moveToNext()) {
+            Recipe obj = new Recipe();
+            obj.setId(Integer.parseInt(cursor.getString(0)));
+            obj.setName(cursor.getString(1));
+            obj.setServings(Integer.parseInt(cursor.getString(2)));
+            obj.setImage(cursor.getString(3));
+            Recipes.add(obj);
+        }
+        return Recipes;
+    }
 }

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmed.thebakingapp.R;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -28,6 +29,8 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
+
+import java.util.prefs.AbstractPreferences;
 
 public class MediaFragment extends Fragment{
 
@@ -45,6 +48,8 @@ public class MediaFragment extends Fragment{
     ImageView thumbImg;
     Button nextVid;
     Button prevVid;
+    private long position;
+    private AbstractPreferences currentState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,33 +61,37 @@ public class MediaFragment extends Fragment{
         prevVid = (Button) root.findViewById(R.id.buttonPrev);
         thumbImg = (ImageView) root.findViewById(R.id.thumbImage);
 
+        position = C.TIME_UNSET;
+
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            currentStepID = bundle.getInt("STEP_ID",0);
-            description = bundle.getString("DESC");
-            videoUrl = bundle.getString("STEP_URL");
-            thumbUrl = bundle.getString("THUMB_URL");
+        if (savedInstanceState != null) {
+            if (bundle != null) {
+                currentStepID = bundle.getInt("STEP_ID",0);
+                description = bundle.getString("DESC");
+                videoUrl = bundle.getString("STEP_URL");
+                thumbUrl = bundle.getString("THUMB_URL");
 
-            if (!thumbUrl.isEmpty()){
-                thumbImg.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity())
-                        .load(thumbUrl)
-                        .into(thumbImg);
-            }
+                if (!thumbUrl.isEmpty()){
+                    thumbImg.setVisibility(View.VISIBLE);
+                    Picasso.with(getActivity())
+                            .load(thumbUrl)
+                            .into(thumbImg);
+                }
 
-            textViewDesc.setText(description);
+                textViewDesc.setText(description);
 
-            initializePlayer(Uri.parse(videoUrl));
-            initializeMediaSession();
+                initializePlayer(Uri.parse(videoUrl));
+                initializeMediaSession();
 
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                nextVid.setVisibility(View.GONE);
-                prevVid.setVisibility(View.GONE);
-                textViewDesc.setVisibility(View.GONE);
-                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                hideSystemUI();
-            }
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    nextVid.setVisibility(View.GONE);
+                    prevVid.setVisibility(View.GONE);
+                    textViewDesc.setVisibility(View.GONE);
+                    simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    hideSystemUI();
+                }
+            }            position = savedInstanceState.getLong("SELECTED_POSITION", C.TIME_UNSET);
         }
 
         nextVid.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +137,12 @@ public class MediaFragment extends Fragment{
     public void onPause() {
         super.onPause();
         releasePlayer();
+        if (simpleExoPlayer != null) {
+            position = simpleExoPlayer.getCurrentPosition();
+            simpleExoPlayer.stop();
+            simpleExoPlayer.release();
+            simpleExoPlayer = null;
+        }
     }
 
     private void releasePlayer(){
@@ -141,6 +156,16 @@ public class MediaFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
+        if (position != C.TIME_UNSET)
+            simpleExoPlayer.seekTo(position);
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        currentState.putLong("SELECTED_POSITION", position);
+
     }
 
     private void initializeMediaSession() {
