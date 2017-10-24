@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.RecipeInfoActivity" />
-        <activity android:name=".Activities.MediaActivity" />
+        <activity android:name=".Activities.MediaActivity" android:configChanges="orientation|screenSize" />
 
         <receiver android:name=".Widgets.IngredientsWidget">
             <intent-filter>

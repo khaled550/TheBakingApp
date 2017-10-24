@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ahmed.thebakingapp.R;
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -29,8 +28,6 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
-
-import java.util.prefs.AbstractPreferences;
 
 public class MediaFragment extends Fragment{
 
@@ -49,49 +46,50 @@ public class MediaFragment extends Fragment{
     Button nextVid;
     Button prevVid;
     private long position;
-    private AbstractPreferences currentState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_media, container, false);
+        return root;
+    }
 
-        textViewDesc = (TextView) root.findViewById(R.id.stepVideoDesc);
-        simpleExoPlayerView = (SimpleExoPlayerView) root.findViewById(R.id.SimpleExoPlayerView);
-        nextVid = (Button) root.findViewById(R.id.buttonNext);
-        prevVid = (Button) root.findViewById(R.id.buttonPrev);
-        thumbImg = (ImageView) root.findViewById(R.id.thumbImage);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        position = C.TIME_UNSET;
+        textViewDesc = (TextView) getActivity().findViewById(R.id.stepVideoDesc);
+        simpleExoPlayerView = (SimpleExoPlayerView) getActivity().findViewById(R.id.SimpleExoPlayerView);
+        nextVid = (Button) getActivity().findViewById(R.id.buttonNext);
+        prevVid = (Button) getActivity().findViewById(R.id.buttonPrev);
+        thumbImg = (ImageView) getActivity().findViewById(R.id.thumbImage);
 
         Bundle bundle = this.getArguments();
-        if (savedInstanceState != null) {
-            if (bundle != null) {
-                currentStepID = bundle.getInt("STEP_ID",0);
-                description = bundle.getString("DESC");
-                videoUrl = bundle.getString("STEP_URL");
-                thumbUrl = bundle.getString("THUMB_URL");
+        if (bundle != null) {
+            currentStepID = bundle.getInt("STEP_ID",0);
+            description = bundle.getString("DESC");
+            videoUrl = bundle.getString("STEP_URL");
+            thumbUrl = bundle.getString("THUMB_URL");
 
-                if (!thumbUrl.isEmpty()){
-                    thumbImg.setVisibility(View.VISIBLE);
-                    Picasso.with(getActivity())
-                            .load(thumbUrl)
-                            .into(thumbImg);
-                }
+            if (!thumbUrl.isEmpty()){
+                thumbImg.setVisibility(View.VISIBLE);
+                Picasso.with(getActivity())
+                        .load(thumbUrl)
+                        .into(thumbImg);
+            }
 
-                textViewDesc.setText(description);
+            textViewDesc.setText(description);
 
-                initializePlayer(Uri.parse(videoUrl));
-                initializeMediaSession();
+            initializePlayer(Uri.parse(videoUrl));
+            initializeMediaSession();
 
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    nextVid.setVisibility(View.GONE);
-                    prevVid.setVisibility(View.GONE);
-                    textViewDesc.setVisibility(View.GONE);
-                    simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    hideSystemUI();
-                }
-            }            position = savedInstanceState.getLong("SELECTED_POSITION", C.TIME_UNSET);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                nextVid.setVisibility(View.GONE);
+                prevVid.setVisibility(View.GONE);
+                textViewDesc.setVisibility(View.GONE);
+                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                hideSystemUI();
+            }
         }
 
         nextVid.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +115,10 @@ public class MediaFragment extends Fragment{
             }
         });
 
-        return root;
+        if (savedInstanceState != null){
+            long a=savedInstanceState.getLong("cp");
+            simpleExoPlayer.seekTo(a);
+        }
     }
 
     private void initializePlayer (Uri videoUrl){
@@ -136,7 +137,6 @@ public class MediaFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayer();
         if (simpleExoPlayer != null) {
             position = simpleExoPlayer.getCurrentPosition();
             simpleExoPlayer.stop();
@@ -152,20 +152,27 @@ public class MediaFragment extends Fragment{
             simpleExoPlayer = null;
         }
     }
-
     @Override
     public void onResume() {
         super.onResume();
-        if (position != C.TIME_UNSET)
+        if (simpleExoPlayer != null)
             simpleExoPlayer.seekTo(position);
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        currentState.putLong("SELECTED_POSITION", position);
+        if (simpleExoPlayer != null){
+            position = simpleExoPlayer.getCurrentPosition();
+            outState.putLong("cp", simpleExoPlayer.getCurrentPosition());
+        }
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        simpleExoPlayer.seekTo(position);
     }
 
     private void initializeMediaSession() {
