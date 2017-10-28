@@ -135,7 +135,6 @@ public class MediaFragment extends Fragment{
         super.onPause();
         if (simpleExoPlayer != null) {
             position = simpleExoPlayer.getCurrentPosition();
-            simpleExoPlayer.setPlayWhenReady(false);
         }
     }
 
@@ -149,6 +148,15 @@ public class MediaFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            nextVid.setVisibility(View.GONE);
+            prevVid.setVisibility(View.GONE);
+            textViewDesc.setVisibility(View.GONE);
+            thumbImg.setVisibility(View.GONE);
+            simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            hideSystemUI();
+        }
         if (simpleExoPlayer != null){
             releasePlayer();
             initializePlayer(Uri.parse(videoUrl));
@@ -161,30 +169,6 @@ public class MediaFragment extends Fragment{
         super.onSaveInstanceState(outState);
         if (simpleExoPlayer != null){
             position = simpleExoPlayer.getCurrentPosition();
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (simpleExoPlayer != null){
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                nextVid.setVisibility(View.GONE);
-                prevVid.setVisibility(View.GONE);
-                textViewDesc.setVisibility(View.GONE);
-                thumbImg.setVisibility(View.GONE);
-                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                hideSystemUI();
-            }else {
-                nextVid.setVisibility(View.VISIBLE);
-                prevVid.setVisibility(View.VISIBLE);
-                textViewDesc.setVisibility(View.VISIBLE);
-                thumbImg.setVisibility(View.VISIBLE);
-                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            position = simpleExoPlayer.getCurrentPosition();
-            simpleExoPlayer.setPlayWhenReady(true);
         }
     }
 

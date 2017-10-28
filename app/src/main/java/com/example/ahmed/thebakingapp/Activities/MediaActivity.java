@@ -2,7 +2,6 @@ package com.example.ahmed.thebakingapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,8 +14,6 @@ public class MediaActivity extends AppCompatActivity {
     String desc;
     String stepUrlstr;
     String thumbUrlstr;
-
-    Fragment mContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,20 +39,5 @@ public class MediaActivity extends AppCompatActivity {
                     .add(R.id.mediaConainer, mediavideoFragment)
                     .commit();
         }
-
-        if (savedInstanceState != null){
-            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "MediaFragment");
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .add(R.id.mediaConainer, mContent)
-                    .commit();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        getSupportFragmentManager().putFragment(outState, "MediaFragment", mContent);
     }
 }
