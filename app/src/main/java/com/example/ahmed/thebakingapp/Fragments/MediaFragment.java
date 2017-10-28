@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 
+import static com.example.ahmed.thebakingapp.Fragments.RecipesInfoFragment.stepList;
+
 public class MediaFragment extends Fragment{
 
     String videoUrl;
@@ -37,7 +41,7 @@ public class MediaFragment extends Fragment{
     int currentStepID;
 
     static MediaSessionCompat mediaSession;
-    SimpleExoPlayer simpleExoPlayer;
+    static SimpleExoPlayer simpleExoPlayer;
     SimpleExoPlayerView simpleExoPlayerView;
     PlaybackStateCompat.Builder stateBuilder;
 
@@ -45,7 +49,7 @@ public class MediaFragment extends Fragment{
     ImageView thumbImg;
     Button nextVid;
     Button prevVid;
-    private long position;
+    private static long position;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,42 +68,36 @@ public class MediaFragment extends Fragment{
         thumbImg = (ImageView) getActivity().findViewById(R.id.thumbImage);
 
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            currentStepID = bundle.getInt("STEP_ID",0);
-            description = bundle.getString("DESC");
-            videoUrl = bundle.getString("STEP_URL");
-            thumbUrl = bundle.getString("THUMB_URL");
+            if (bundle != null) {
+                currentStepID = bundle.getInt("STEP_ID",0);
+                description = bundle.getString("DESC");
+                videoUrl = bundle.getString("STEP_URL");
+                thumbUrl = bundle.getString("THUMB_URL");
+                if (!TextUtils.isEmpty(thumbUrl)){
+                    thumbImg.setVisibility(View.VISIBLE);
+                    Picasso.with(getActivity())
+                            .load(thumbUrl)
+                            .into(thumbImg);
+                }
 
-            if (!thumbUrl.isEmpty()){
-                thumbImg.setVisibility(View.VISIBLE);
-                Picasso.with(getActivity())
-                        .load(thumbUrl)
-                        .into(thumbImg);
+                textViewDesc.setText(description);
             }
-
-            textViewDesc.setText(description);
-
+        if (savedInstanceState == null){
+            Log.e("videoUrl",videoUrl);
             initializePlayer(Uri.parse(videoUrl));
             initializeMediaSession();
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                nextVid.setVisibility(View.GONE);
-                prevVid.setVisibility(View.GONE);
-                textViewDesc.setVisibility(View.GONE);
-                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-                hideSystemUI();
-            }
         }
 
         nextVid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentStepID < RecipesInfoFragment.stepList.size() - 1) {
+                if (currentStepID < stepList.size() - 1) {
                     currentStepID++;
                     releasePlayer();
-                    textViewDesc.setText(RecipesInfoFragment.stepList.get(currentStepID).getDescription());
-                    initializePlayer(Uri.parse(RecipesInfoFragment.stepList.get(currentStepID).getVideoURL()));
+                    description = stepList.get(currentStepID).getDescription();
+                    videoUrl = RecipesInfoFragment.stepList.get(currentStepID).getVideoURL();
+                    textViewDesc.setText(description);
+                    initializePlayer(Uri.parse(videoUrl));
                 }
             }
         });
@@ -109,16 +107,13 @@ public class MediaFragment extends Fragment{
                 if (currentStepID > 0){
                     currentStepID--;
                     releasePlayer();
-                    textViewDesc.setText(RecipesInfoFragment.stepList.get(currentStepID).getDescription());
-                    initializePlayer(Uri.parse(RecipesInfoFragment.stepList.get(currentStepID).getVideoURL()));
+                    description = stepList.get(currentStepID).getDescription();
+                    videoUrl = RecipesInfoFragment.stepList.get(currentStepID).getVideoURL();
+                    textViewDesc.setText(description);
+                    initializePlayer(Uri.parse(videoUrl));
                 }
             }
         });
-
-        if (savedInstanceState != null){
-            long a=savedInstanceState.getLong("cp");
-            simpleExoPlayer.seekTo(a);
-        }
     }
 
     private void initializePlayer (Uri videoUrl){
@@ -131,6 +126,7 @@ public class MediaFragment extends Fragment{
             MediaSource mediaSource = new ExtractorMediaSource(videoUrl, new DefaultDataSourceFactory(getActivity(), userAgent),new DefaultExtractorsFactory(), null, null);
             simpleExoPlayer.prepare(mediaSource);
             simpleExoPlayer.setPlayWhenReady(true);
+            simpleExoPlayer.seekTo(position);
         }
     }
 
@@ -139,9 +135,7 @@ public class MediaFragment extends Fragment{
         super.onPause();
         if (simpleExoPlayer != null) {
             position = simpleExoPlayer.getCurrentPosition();
-            simpleExoPlayer.stop();
-            simpleExoPlayer.release();
-            simpleExoPlayer = null;
+            simpleExoPlayer.setPlayWhenReady(false);
         }
     }
 
@@ -155,8 +149,11 @@ public class MediaFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        if (simpleExoPlayer != null)
-            simpleExoPlayer.seekTo(position);
+        if (simpleExoPlayer != null){
+            releasePlayer();
+            initializePlayer(Uri.parse(videoUrl));
+            initializeMediaSession();
+        }
     }
 
     @Override
@@ -164,15 +161,31 @@ public class MediaFragment extends Fragment{
         super.onSaveInstanceState(outState);
         if (simpleExoPlayer != null){
             position = simpleExoPlayer.getCurrentPosition();
-            outState.putLong("cp", simpleExoPlayer.getCurrentPosition());
         }
-
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        simpleExoPlayer.seekTo(position);
+        if (simpleExoPlayer != null){
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                nextVid.setVisibility(View.GONE);
+                prevVid.setVisibility(View.GONE);
+                textViewDesc.setVisibility(View.GONE);
+                thumbImg.setVisibility(View.GONE);
+                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+                simpleExoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                hideSystemUI();
+            }else {
+                nextVid.setVisibility(View.VISIBLE);
+                prevVid.setVisibility(View.VISIBLE);
+                textViewDesc.setVisibility(View.VISIBLE);
+                thumbImg.setVisibility(View.VISIBLE);
+                simpleExoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            position = simpleExoPlayer.getCurrentPosition();
+            simpleExoPlayer.setPlayWhenReady(true);
+        }
     }
 
     private void initializeMediaSession() {

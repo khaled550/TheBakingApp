@@ -18,7 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.RecipeInfoActivity" />
+        <activity android:name=".Activities.RecipeInfoActivity"
+            android:parentActivityName="com.example.ahmed.thebakingapp.Activities.RecipesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.ahmed.thebakingapp.Activities.RecipesActivity" />
+            />
+        </activity>
         <activity android:name=".Activities.MediaActivity" android:configChanges="orientation|screenSize" />
 
         <receiver android:name=".Widgets.IngredientsWidget">

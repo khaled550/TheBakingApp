@@ -65,7 +65,12 @@ public class RecipesInfoFragment extends Fragment {
                 , recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Step step = stepList.get(position);
+
+                if (position <= 0){
+                    return;
+                }
+
+                Step step = stepList.get(position - 1);
 
                 if (isBigScreen(getActivity())){
                     FragmentManager fm = getChildFragmentManager();

@@ -2,6 +2,7 @@ package com.example.ahmed.thebakingapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,24 +16,25 @@ public class MediaActivity extends AppCompatActivity {
     String stepUrlstr;
     String thumbUrlstr;
 
+    Fragment mContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media);
 
-        Intent intent = getIntent();
-        currentStepId = intent.getIntExtra("STEP_ID",0);
-        desc = intent.getStringExtra("DESC");
-        stepUrlstr = intent.getStringExtra("STEP_URL");
-        thumbUrlstr = intent.getStringExtra("THUMB_URL");
-
-        Bundle bundle = new Bundle();
-        bundle.putInt("STEP_ID", currentStepId);
-        bundle.putString("DESC", desc);
-        bundle.putString("STEP_URL", stepUrlstr);
-        bundle.putString("THUMB_URL", thumbUrlstr);
-
         if (savedInstanceState == null) {
+            Intent intent = getIntent();
+            currentStepId = intent.getIntExtra("STEP_ID",0);
+            desc = intent.getStringExtra("DESC");
+            stepUrlstr = intent.getStringExtra("STEP_URL");
+            thumbUrlstr = intent.getStringExtra("THUMB_URL");
+
+            Bundle bundle = new Bundle();
+            bundle.putInt("STEP_ID", currentStepId);
+            bundle.putString("DESC", desc);
+            bundle.putString("STEP_URL", stepUrlstr);
+            bundle.putString("THUMB_URL", thumbUrlstr);
             FragmentManager fragmentManager = getSupportFragmentManager();
             MediaFragment mediavideoFragment = new MediaFragment();
             mediavideoFragment.setArguments(bundle);
@@ -41,5 +43,19 @@ public class MediaActivity extends AppCompatActivity {
                     .commit();
         }
 
+        if (savedInstanceState != null){
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "MediaFragment");
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .add(R.id.mediaConainer, mContent)
+                    .commit();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, "MediaFragment", mContent);
     }
 }

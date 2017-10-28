@@ -111,7 +111,7 @@ public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             case STEP:
                 ViewHolder2 viewHolder2 = (ViewHolder2)holder;
-                Step step = stepList.get(position);
+                Step step = stepList.get(position-1);
                 viewHolder2.stepTitle.setText(step.getShortDescription());
                 if (step.getThumbnailURL() == null){
                     Picasso.with(this.context)
@@ -129,6 +129,6 @@ public class MyRecipesInfoAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return infoList.size()-ingredientList.size();
+        return infoList.size()-ingredientList.size()+1;
     }
 }
