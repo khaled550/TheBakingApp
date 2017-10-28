@@ -2,6 +2,7 @@ package com.example.ahmed.thebakingapp.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,8 @@ public class RecipesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MyRecipesAdapter myRecipesAdapter;
+    RecyclerView.LayoutManager mLayoutManager;
+    private Parcelable recyclerState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,7 +38,7 @@ public class RecipesFragment extends Fragment {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recipesRecycler);
 
         myRecipesAdapter = new MyRecipesAdapter(getActivity(), recipeList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(myRecipesAdapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity()
@@ -52,5 +55,18 @@ public class RecipesFragment extends Fragment {
 
             }
         }));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        recyclerState = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable("recyclerViewState", recyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        recyclerView.getLayoutManager().onRestoreInstanceState(recyclerState);
     }
 }
